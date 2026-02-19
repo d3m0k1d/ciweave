@@ -1,0 +1,22 @@
+
+version: "2"
+run:
+  timeout: 5m
+  tests: false
+  build-tags:
+    - integration
+
+linters:
+  enable:
+    - errcheck
+    - errname
+    - govet
+    - staticcheck
+    - gosec
+    - nilerr
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
+    - golines

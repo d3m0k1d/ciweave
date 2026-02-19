@@ -1,0 +1,67 @@
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+version: 2
+project_name: ciweave
+
+builds:
+  - id: ciweave
+    main: ./cmd/ciweave
+    binary: ciweave
+    ignore:
+      - goos: windows
+      - goos: darwin
+      - goos: freebsd
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - "-s -w" 
+    env:
+      - CGO_ENABLED=0
+archives:
+  - format: tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+
+nfpms:
+  - id: ciweave
+    package_name: ciweave
+    file_name_template: "{{ .PackageName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    homepage: https://gitea.d3m0k1d.ru/d3m0k1d/BanForge
+    description: ciweave generator ci/cd pipelines
+    maintainer: d3m0k1d <contact@d3m0k1d.ru>
+    license: GPLv3.0
+    formats:
+      - apk
+      - deb
+      - rpm
+      - archlinux
+    bindir: /usr/bin
+    scripts:
+      postinstall: build/postinstall.sh
+      postremove: build/postremove.sh
+
+
+release:
+  github:
+    owner: d3m0k1d
+    name: ciweave
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+
+checksum:
+  name_template: "{{ .ProjectName }}_{{ .Version }}_checksums.txt"
+  algorithm: sha256
+
+sboms:
+  - artifacts: archive
+    documents:
+      - "{{ .ArtifactName }}.spdx.json"
+    cmd: syft
+    args: ["$artifact", "--output", "spdx-json=$document"]
+
